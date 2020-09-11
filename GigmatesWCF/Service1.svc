@@ -1,2 +1,2 @@
-﻿<%@ ServiceHost Language="C#" Debug="true" Service="GigmatesWCF.Service1" CodeBehind="Service1.svc.cs" 
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="GigmatesWCF.Service1" CodeBehind="`/App_Data/Service1.cs" 
     Factory="System.ServiceModel.Activation.WebScriptServiceHostFactory"%>
