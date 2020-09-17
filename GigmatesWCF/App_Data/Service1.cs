@@ -5,39 +5,25 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.ServiceModel.Activation;
+using System.ServiceModel.Dispatcher;
+using System.ServiceModel.Description;
+using System.ServiceModel.Channels;
+using System.ServiceModel.Configuration;
 using System.Text;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Web;
+using Newtonsoft.Json;
+
 
 namespace GigmatesWCF
 {
 
-
+    [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     public class Service1 : IGigmatesService
     {
-        //public string GetData(int value)
-        //{
-        //    return string.Format("You entered: {0}", value);
-        //}
-
-        //public CompositeType GetDataUsingDataContract(CompositeType composite)
-        //{
-        //    if (composite == null)
-        //    {
-        //        throw new ArgumentNullException("composite");
-        //    }
-        //    if (composite.BoolValue)
-        //    {
-        //        composite.StringValue += "Suffix";
-        //    }
-        //    return composite;
-        //}
-
-        //public string greetings()
-        //{
-        //    return "Hello werld";
-        //}
+        
 
         public string derick()
         {
@@ -45,11 +31,12 @@ namespace GigmatesWCF
         }
 
 
-
-        public Person Login(string username, string password)
+        public string Login(Person personLog)
         {
+           
             Person logPerson = new Person();
             string connectionString = ConfigurationManager.ConnectionStrings["GigmatesDB"]?.ConnectionString;
+            string resultString;
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
@@ -57,8 +44,8 @@ namespace GigmatesWCF
                     using (SqlCommand command = new SqlCommand("SignIn", conn))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.Add("username", SqlDbType.NVarChar, 20).Value = username;
-                        command.Parameters.Add("password", SqlDbType.NVarChar, 20).Value = password;
+                        command.Parameters.Add("username", SqlDbType.NVarChar, 20).Value = personLog.Username;
+                        command.Parameters.Add("password", SqlDbType.NVarChar, 20).Value = personLog.Password;
 
                         conn.Open();
 
@@ -81,12 +68,16 @@ namespace GigmatesWCF
                         conn.Close();
                     }
                 }
+
+                resultString = JsonConvert.SerializeObject(logPerson);
             }
             catch (Exception ex)
             {
-                string err = ex.Message;
+                resultString = ex.Message;
             }
-            return logPerson;
+
+
+            return resultString;
 
         }
 
@@ -142,5 +133,70 @@ namespace GigmatesWCF
             return dbval;
         }
     }
+
+    //CODE ADDED FOR CORS
+
+    //public class CustomHeaderMessageInspector : IDispatchMessageInspector
+    //{
+    //    Dictionary<string, string> requiredHeaders;
+    //    public CustomHeaderMessageInspector(Dictionary<string, string> headers)
+    //    {
+    //        requiredHeaders = headers ?? new Dictionary<string, string>();
+    //    }
+
+    //    public object AfterReceiveRequest(ref System.ServiceModel.Channels.Message request, System.ServiceModel.IClientChannel channel, System.ServiceModel.InstanceContext instanceContext)
+    //    {
+    //        return null;
+    //    }
+
+    //    public void BeforeSendReply(ref System.ServiceModel.Channels.Message reply, object correlationState)
+    //    {
+    //        var httpHeader = reply.Properties["httpResponse"] as HttpResponseMessageProperty;
+    //        foreach (var item in requiredHeaders)
+    //        {
+    //            httpHeader.Headers.Add(item.Key, item.Value);
+    //        }
+    //    }
+    //}
+
+    //public class EnableCrossOriginResourceSharingBehavior : BehaviorExtensionElement, IEndpointBehavior
+    //{
+    //    public void AddBindingParameters(ServiceEndpoint endpoint, System.ServiceModel.Channels.BindingParameterCollection bindingParameters)
+    //    {
+
+    //    }
+
+    //    public void ApplyClientBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.ClientRuntime clientRuntime)
+    //    {
+
+    //    }
+
+    //    public void ApplyDispatchBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.EndpointDispatcher endpointDispatcher)
+    //    {
+    //        var requiredHeaders = new Dictionary<string, string>();
+
+    //        requiredHeaders.Add("Access-Control-Allow-Origin", "*");
+    //        requiredHeaders.Add("Access-Control-Request-Method", "POST,GET,PUT,DELETE,OPTIONS");
+    //        requiredHeaders.Add("Access-Control-Allow-Headers", "X-Requested-With,Content-Type");
+
+    //        endpointDispatcher.DispatchRuntime.MessageInspectors.Add(new CustomHeaderMessageInspector(requiredHeaders));
+    //    }
+
+    //    public void Validate(ServiceEndpoint endpoint)
+    //    {
+
+    //    }
+
+    //    public override Type BehaviorType
+    //    {
+    //        get { return typeof(EnableCrossOriginResourceSharingBehavior); }
+    //    }
+
+    //    protected override object CreateBehavior()
+    //    {
+    //        return new EnableCrossOriginResourceSharingBehavior();
+    //    }
+    //}
+
 
 }
