@@ -24,7 +24,7 @@ namespace GigmatesWCF
         {
             //HttpContext.Current.Response.AddHeader("Access-Control-Allow-Origin", "*");
             //if (HttpContext.Current.Request.HttpMethod == "OPTIONS")
-            //{               
+            //{
             //    HttpContext.Current.Response.AddHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
             //    HttpContext.Current.Response.AddHeader("Access-Control-Allow-Methods", "GET, POST");
             //    HttpContext.Current.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept");

@@ -27,45 +27,69 @@ namespace GigmatesWCF
         [OperationContract]
         [WebInvoke(Method = "*", BodyStyle = WebMessageBodyStyle.Wrapped,RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string Register(Person newPerson);
-    }
 
-    [DataContract]
-    public class Person
-    {
-        string username,
-               password,
-               firstname,
-               lastname,
-               location,
-               bio;
-        int age,
-            id,
-            type,
-            gender;
+        [OperationContract]
+        [WebInvoke(Method = "*", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string GetGenreList();
 
-        float rate;
 
-        [DataMember]
-        public string Username { get { return this.username; } set { this.username = value; } }
-        [DataMember]
-        public string Password { get { return this.password; } set { this.password = value; } }
-        [DataMember]
-        public string Firstname { get { return this.firstname; } set { this.firstname = value; } }
-        [DataMember]
-        public string Lastname { get { return this.lastname; } set { this.lastname = value; } }
-        [DataMember]
-        public string Location { get { return this.location; } set { this.location = value; } }
-        [DataMember]
-        public string Bio { get { return this.bio; } set { this.bio = value; } }
-        [DataMember]
-        public int Age { get { return this.age; } set { this.age = value; } }
-        [DataMember]
-        public int ID { get { return this.id; } set { this.id = value; } }
-        [DataMember]
-        public int Type { get { return this.type; } set { this.type = value; } }
-        [DataMember]
-        public float Rate { get { return this.rate; } set { this.rate = value; } }
-        [DataMember]
-        public int Gender { get { return this.gender; } set { this.gender = value; } }
+        [OperationContract]
+        [WebInvoke(Method = "*", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string AddGig(Gig newGig);
+
+        [OperationContract]
+        [WebInvoke(Method = "*", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string AddSong(Song newSong);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json,UriTemplate="/GetSongs")]
+        string GetSongs(int userID);
+
+        [OperationContract]
+        [WebInvoke(Method = "OPTIONS", UriTemplate = "/GetSongs")]
+        void GetSongsopt();
+
+        [OperationContract]
+        [WebInvoke(Method = "*", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string GetUserNotifs(int userID);
+
+        [OperationContract]
+        [WebInvoke(Method = "*", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string GetPersonTypes();
+
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "/GetAvailableGigs")]
+        string GetAvailableGigs(int userID);
+        [OperationContract]
+        [WebInvoke(Method = "OPTIONS", UriTemplate = "/GetAvailableGigs")]
+        void GetAvailableGigsopt();
+
+        [OperationContract]
+        [WebInvoke(Method = "*", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string JoinGig(Gig AvailableGig,Person RegisteredMusician);
+
+        [OperationContract]
+        [WebInvoke(Method = "*", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string SendGigInvite(Invite NewInvite);
+
+        [OperationContract]
+        [WebInvoke(Method = "*", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string SendPersonInvite(Invite NewInvite);
+
+        [OperationContract]
+        [WebInvoke(Method = "*", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string SendBandInvite(Invite NewInvite);
+
+        [OperationContract]
+        [WebInvoke(Method = "*", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string EditProfile(Person EditPerson);
+
+        //SEARCH FOR GIG PERSON 
+        //ADD GIGMATE(YUNG PARANG FRIENDS)
+        //EDIT PROFILE
+        //GIGHISTORY
+        //GET NOTIFS
+        //GET UPCOMING GIGS
+        //GET GIGMATES
     }
 }
