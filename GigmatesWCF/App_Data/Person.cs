@@ -64,14 +64,13 @@ namespace GigmatesWCF
         string gigName;
         string gigDate;
         string gigVenue;
-        string creatorID;
+        int creatorID;
         string gigCreatorName;
         string gigCreatorUsername;
         int gigGenreID;
         string gigGenreName;
         int gigID;
         string gigStatus;
-        
 
         [DataMember]
         public int GigID { get { return this.gigID; } set { this.gigID = value; } }
@@ -82,7 +81,7 @@ namespace GigmatesWCF
         [DataMember]
         public string Venue { get { return this.gigVenue; } set { this.gigVenue = value; } }
         [DataMember]
-        public string Creator { get { return this.creatorID; } set { this.creatorID = value; } }
+        public int Creator { get { return this.creatorID; } set { this.creatorID = value; } }
         [DataMember]
         public int GenreID { get { return this.gigGenreID; } set { this.gigGenreID = value; } }
         [DataMember]
@@ -93,6 +92,7 @@ namespace GigmatesWCF
         public string CreatorUsername { get { return this.gigCreatorUsername; } set { this.gigCreatorUsername=value; } }
         [DataMember]
         public string GenreName { get { return this.gigGenreName; } set { this.gigGenreName = value; } }
+
     }
 
     [DataContract]
@@ -130,11 +130,16 @@ namespace GigmatesWCF
         string InviteMessage;
         int InviteReceiverID;
         int InviteSenderID;
+        string inviteSenderName;
         int InviteStatusID;
         string InviteStatusName;
         int InviteTypeID;
         string InviteTypeName;
         int InvitePurposeID;
+        string InvitePurposeName;
+        Gig inviteGig;
+        Person inviteGigMate;
+        Band inviteBand;
 
         [DataMember]
         public int ID { set { this.InviteID = value; } get { return this.InviteID; } }
@@ -148,6 +153,8 @@ namespace GigmatesWCF
         [DataMember]
         public int SenderID { set { this.InviteSenderID = value; } get { return this.InviteSenderID; } }
 
+        [DataMember]
+        public string SenderName { set { this.inviteSenderName = value; } get { return this.inviteSenderName; } } 
         [DataMember]
         public int StatusID { set { this.InviteStatusID = value; } get { return this.InviteStatusID; } }
 
@@ -163,6 +170,23 @@ namespace GigmatesWCF
         [DataMember]
         public int PurposeID { set { this.InvitePurposeID = value; } get { return this.InvitePurposeID; } }
 
+        [DataMember]
+        public string Purpose { set { this.InvitePurposeName = value; } get { return this.InvitePurposeName; } }
+
+        [DataMember]
+        public Gig GigInvite { set { this.inviteGig = value; } get { return this.inviteGig; } }
+
+        [DataMember]
+        public Person GigmateInvite { set { this.inviteGigMate = value; } get { return this.inviteGigMate; } }
     }
 
+    //FINISH THE BAND CLASS
+    [DataContract]
+    public class Band
+    {
+        int bandID;
+        string bandName;
+        List<Person> bandMembers;
+
+    }
 }

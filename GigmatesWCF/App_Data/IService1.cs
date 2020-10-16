@@ -84,9 +84,35 @@ namespace GigmatesWCF
         [WebInvoke(Method = "*", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string EditProfile(Person EditPerson);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "/GetInvites")]
+        string GetInvites(int userID);
+
+        [OperationContract]
+        [WebInvoke(Method = "OPTIONS", UriTemplate = "/GetInvites")]
+        void GetInvitessopt();
+
+        [OperationContract]
+        [WebInvoke(Method = "*", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        string InviteResponse(Invite inviteReceived);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json,UriTemplate = "/GetGigsForProf")]
+        string GetGigsForProf(int userID);
+
+        [OperationContract]
+        [WebInvoke(Method = "OPTIONS", UriTemplate = "/GetGigsForProf")]
+        void GetGigsForProfopt();
+
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json,UriTemplate = "/GetUserDataByID")]
+        string GetUserDataByID(int userID);
+
+        [OperationContract]
+        [WebInvoke(Method = "OPTIONS", UriTemplate = "/GetUserDataByID")]
+        void GetUserDataByIDopt();
         //SEARCH FOR GIG PERSON 
         //ADD GIGMATE(YUNG PARANG FRIENDS)
-        //EDIT PROFILE
         //GIGHISTORY
         //GET NOTIFS
         //GET UPCOMING GIGS

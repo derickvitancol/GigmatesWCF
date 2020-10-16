@@ -300,6 +300,7 @@ namespace GigmatesWCF
                             AvailableGig.Date = reader["gigDate"].ToString();
                             AvailableGig.CreatorUsername = reader["Creator Username"].ToString();
                             AvailableGig.CreatorName = reader["Creator Name"].ToString();
+                            AvailableGig.Creator = int.Parse(reader["Creator ID"].ToString());
                             AvailableGig.GenreName = reader["Genre"].ToString();
                             AvailableGig.Status = reader["Gig Status"].ToString();
                             AvailableGigList.Add(AvailableGig);
@@ -494,7 +495,7 @@ namespace GigmatesWCF
             return resultString;
         }
 
-        //FUNCTION TO JOIN A PERSON TO A GIG 
+        //FUNCTION TO JOIN A PERSON TO A GIG NEEDS TO BE FIXED 
         public string JoinGig(Gig AvailableGig, Person RegisteredMusician)
         {
             string resultString = "0";
@@ -503,12 +504,239 @@ namespace GigmatesWCF
             return resultString;
 
         }
-
+        
+        //FUNCTION TO EDIT THE PROFILE 
         public string EditProfile(Person EditPerson)
         {
             string resultString = "0";
+            string connectionString = ConfigurationManager.ConnectionStrings["GigmatesDB"]?.ConnectionString;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand command = new SqlCommand("EditProfile", conn))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add("userID", SqlDbType.SmallInt).Value = EditPerson.ID;
+                        command.Parameters.Add("age", SqlDbType.SmallInt).Value = EditPerson.Age;
+                        command.Parameters.Add("location", SqlDbType.VarChar,30).Value = EditPerson.Location;
+                        command.Parameters.Add("password", SqlDbType.VarChar, 30).Value = EditPerson.Password;
+                        command.Parameters.Add("bio", SqlDbType.NVarChar, 50).Value = ToDbNull(EditPerson.Bio);
+                        conn.Open();
+                        int val = command.ExecuteNonQuery();
+                        conn.Close();
+                        resultString = val.ToString();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                resultString = ex.Message;
+            }
+
+            return resultString;
+        }
+
+        public void GetUserDataByIDopt() { }
+
+        //FUNCTION TO GET THE INVITES TO BE EVALUATED BY THE USER
+        public string GetInvites(int userID)
+        {
+            string resultString= "0";
+
+            string connectionString = ConfigurationManager.ConnectionStrings["GigmatesDB"]?.ConnectionString;
+            try
+            {
+                List<Invite> InviteList = new List<Invite>();
+
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand command = new SqlCommand("GetInvites", conn))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add("userID", SqlDbType.SmallInt).Value = userID;
+                        conn.Open();
+
+                        SqlDataReader reader = command.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            Invite collectedInvite = new Invite();
+                            collectedInvite.ID = int.Parse(reader["inviteID"].ToString());
+                            collectedInvite.SenderID = int.Parse(reader["senderID"].ToString());
+                            collectedInvite.SenderName = reader["Sender Name"].ToString();
+                            collectedInvite.TypeID = int.Parse(reader["Type ID"].ToString());
+                            collectedInvite.TypeName = reader["Type Name"].ToString();
+                            //GIG
+                            if(collectedInvite.TypeID == 1)
+                            {
+                                collectedInvite.GigInvite = new Gig();
+                                collectedInvite.GigInvite.Name = reader["gigName"].ToString();
+                                collectedInvite.GigInvite.Date = reader["gigDate"].ToString();
+                                collectedInvite.GigInvite.GigID = int.Parse(reader["gigID"].ToString());
+                            }
+                            //BAND
+                            else if(collectedInvite.TypeID == 2)
+                            {
+                                //INSERT BAND HERE
+                            }
+                            //GIGMATE
+                            else if(collectedInvite.TypeID == 3)
+                            {
+                               //INSERT FOR PERSON HERE 
+                            }
 
 
+                            InviteList.Add(collectedInvite);
+                        }
+
+                        conn.Close();
+                    }
+                }
+
+                resultString = JsonConvert.SerializeObject(InviteList);
+            }
+            catch (Exception ex)
+            {
+                resultString = ex.Message;
+            }
+
+            return resultString;
+        }
+        public void GetInvitessopt() { }
+
+        //FUNCTION TO SEND THE RESPONSE OF THE USER TO A (1)GIG INVITE (2)BAND INVITE OR (3)GIGMATE REQUEST
+        public string InviteResponse(Invite inviteReceived)
+        {
+            string resultString = "0";
+            string connectionString = ConfigurationManager.ConnectionStrings["GigmatesDB"]?.ConnectionString;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand command = new SqlCommand("InviteResponse", conn))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add("inviteID", SqlDbType.SmallInt).Value = inviteReceived.ID;
+                        command.Parameters.Add("responseValue", SqlDbType.TinyInt).Value = inviteReceived.StatusID;
+                        //IF INVITE TYPE IS 1 PARTICIPANT ID IS THE ID OF THE USER JOINING THE GIG 
+                        // 2 FOR BAND
+                        // IF INVITE TYPE IS 3 PARTICIPANT ID IS THE LOGGED IN USER
+                        if(inviteReceived.TypeID == 1)
+                        {
+                            //GIG INVITE
+                            command.Parameters.Add("participantID", SqlDbType.TinyInt).Value = inviteReceived.SenderID;
+                        }
+                        else if(inviteReceived.TypeID == 3)
+                        {
+                            //GIGMATE INVITE
+                            command.Parameters.Add("participantID", SqlDbType.TinyInt).Value = inviteReceived.GigmateInvite.ID;
+                        }
+                        conn.Open();
+                        int val = command.ExecuteNonQuery();
+                        conn.Close();
+                        resultString = val.ToString();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                resultString = ex.Message;
+
+            }
+            return resultString;
+        }
+
+        //FUNCTION CALLED TO GET THE GIGS THE USER CREATED OR A PARTICIPANT  
+        public string GetGigsForProf(int userID)
+        {
+            string resultString = "0";
+            string connectionString = ConfigurationManager.ConnectionStrings["GigmatesDB"]?.ConnectionString;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand command = new SqlCommand("GetGigsForProf", conn))
+                    {
+                        List<Gig> collectedGigList = new List<Gig>();
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add("userID", SqlDbType.SmallInt).Value = userID;
+
+                        conn.Open();
+                        SqlDataReader reader = command.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            Gig collectedGig = new Gig();
+                            collectedGig.GigID = int.Parse(reader["gigID"].ToString());
+                            collectedGig.Name = reader["gigName"].ToString();
+                            collectedGig.Venue = reader["gigVenue"].ToString();
+                            collectedGig.Date = reader["gigDate"].ToString();
+                            collectedGig.GenreID = int.Parse(reader["gigGenre"].ToString());
+                            collectedGig.GenreName = reader["genreName"].ToString();
+                            collectedGig.CreatorName = reader["Creator Name"].ToString();
+                            collectedGig.Creator = int.Parse(reader["creatorID"].ToString());
+                            collectedGig.Status = reader["GigStatusName"].ToString();
+                            collectedGigList.Add(collectedGig);
+                        }
+                        conn.Close();
+                        resultString = JsonConvert.SerializeObject(collectedGigList);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                resultString = ex.Message;
+            }
+
+            return resultString;
+        }
+
+        public void GetGigsForProfopt() { }
+
+        public string GetUserDataByID(int userID)
+        {
+            string resultString = "0";
+            Person PersonDetails = new Person();
+            string connectionString = ConfigurationManager.ConnectionStrings["GigmatesDB"]?.ConnectionString;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand command = new SqlCommand("GetUserDataByID", conn))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add("userID", SqlDbType.SmallInt).Value = userID;
+                        conn.Open();
+                        SqlDataReader reader = command.ExecuteReader();
+
+                        while(reader.Read())
+                        {
+                            
+                            PersonDetails.Age =int.Parse(reader["Age"].ToString());
+                            PersonDetails.Firstname = reader["Firstname"].ToString();
+                            PersonDetails.Lastname = reader["Lastname"].ToString();
+                            PersonDetails.ID = int.Parse(reader["ID"].ToString());
+                            PersonDetails.Gender = int.Parse(reader["genderID"].ToString());
+                            PersonDetails.Password = reader["Password"].ToString();
+                            PersonDetails.Location = reader["Location"].ToString();
+                            PersonDetails.Username = reader["Username"].ToString();
+                            PersonDetails.Bio = reader["Bio"].ToString();
+                            PersonDetails.Rate = int.Parse(reader["Rate"].ToString());
+                            PersonDetails.Type = int.Parse(reader["Type ID"].ToString());
+                        }
+                        conn.Close();
+                        resultString = JsonConvert.SerializeObject(PersonDetails);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                resultString = ex.Message;
+
+            }
             return resultString;
         }
 
